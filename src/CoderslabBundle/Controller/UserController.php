@@ -4,7 +4,7 @@ namespace CoderslabBundle\Controller;
 
 use CoderslabBundle\Entity\User;
 use CoderslabBundle\Repository\UserRepository;
-use CoderslabBundle\Form\UserType;
+use CoderslabBundle\Form\UserBasicType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -21,7 +21,7 @@ class UserController extends Controller
     public function newUserGetAction()
     {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserBasicType::class, $user);
 
     	return $this->render('CoderslabBundle:User:new_user_get.html.twig', array(
             'form' => $form->createView()
@@ -35,7 +35,7 @@ class UserController extends Controller
 	public function newUserPostAction(Request $request)
 	{
 		$user = new User();
-		$form = $this->createForm(UserType::class, $user);
+		$form = $this->createForm(UserBasicType::class, $user);
 		$form->handleRequest($request);
 
 		if ( $form->isSubmitted() && $form->isValid()){
