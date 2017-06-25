@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+    </head>
+    <body>
+    {% block top %}Szablon{% endblock %}
+
+    {% block body %}
+        <table border="1" rules="all">
+            <tr>
+                <th>Id</th>
+                <th>DB Id</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Comments</th>
+                <th>Photo</th>
+            </tr>
+            {% block tableContent %}
+            {% endblock %}
+        </table>
+    {% endblock %}
+    </body>
+</html>

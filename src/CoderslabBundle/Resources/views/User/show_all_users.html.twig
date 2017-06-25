@@ -1,7 +1,17 @@
-{% extends "::base.html.twig" %}
+{% extends "CoderslabBundle:User:base.html.twig" %}
 
-{% block title %}CoderslabBundle:User:showAllUsers{% endblock %}
+{% block title %}All contacts!{% endblock %}
+
+{% block top %}<h1>All contacts: </h1>{% endblock %}
 
 {% block body %}
-<h1>Welcome to the User:showAllUsers page</h1>
+
+    <a href="{{ path('newUser') }}">Add new contact</a>
+
+    {{ parent() }}
+
+    {% block tableContent %}
+
+    {% endblock %}
+
 {% endblock %}

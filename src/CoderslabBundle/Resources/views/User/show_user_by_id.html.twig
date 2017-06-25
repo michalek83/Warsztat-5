@@ -1,7 +1,12 @@
-{% extends "::base.html.twig" %}
+{% extends "CoderslabBundle:User:base.html.twig" %}
 
-{% block title %}CoderslabBundle:User:showUserById{% endblock %}
+{% block title %}Kontakt o Id !{% endblock %}
 
 {% block body %}
-<h1>Welcome to the User:showUserById page</h1>
+
+    <h1>Kontakt o Id </h1>
+    {{ parent() }}
+    {% block tableContent %}
+
+    {% endblock %}
 {% endblock %}

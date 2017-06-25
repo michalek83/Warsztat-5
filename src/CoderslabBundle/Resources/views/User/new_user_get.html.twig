@@ -1,7 +1,11 @@
-{% extends "::base.html.twig" %}
+{% extends "CoderslabBundle:User:base.html.twig" %}
 
-{% block title %}CoderslabBundle:User:newUser{% endblock %}
+{% block title %}Add new contact:{% endblock %}
+
+{% block top %}<h1>Adding new contact</h1>{% endblock %}
 
 {% block body %}
-<h1>Welcome to the User:newUser page</h1>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
 {% endblock %}
