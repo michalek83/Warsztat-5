@@ -5,21 +5,8 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
     </head>
     <body>
-    {% block top %}Szablon{% endblock %}
-
-    {% block body %}
-        <table border="1" rules="all">
-            <tr>
-                <th>Id</th>
-                <th>DB Id</th>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Comments</th>
-                <th>Photo</th>
-            </tr>
-            {% block tableContent %}
-            {% endblock %}
-        </table>
-    {% endblock %}
+        {% block top %}<h1>Szablon</h1>{% endblock %}
+        {% block content %}<p>Zawartość</p>{% endblock %}
+        {% block footer %}<a href="{{ path('showAllUsers') }}">Back to all contacts</a> {% endblock %}
     </body>
 </html>

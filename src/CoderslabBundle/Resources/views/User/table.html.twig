@@ -1,0 +1,13 @@
+{% block table %}
+    <table border="1" rules="all">
+        <tr>
+            {% block tableHead %}<th>Id</th>{% endblock %}
+            <th>DB Id</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Comments</th>
+            <th>Photo</th>
+        </tr>
+        {% block tableRows %}{% endblock %}
+    </table>
+{% endblock %}

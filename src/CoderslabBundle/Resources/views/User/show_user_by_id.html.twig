@@ -1,12 +1,19 @@
 {% extends "CoderslabBundle:User:base.html.twig" %}
 
-{% block title %}Kontakt o Id !{% endblock %}
+{% block title %}Contact no !{% endblock %}
 
-{% block body %}
+{% block top %}<h1>Contact no {{ user.0.id }}</h1>{% endblock %}
 
-    <h1>Kontakt o Id </h1>
-    {{ parent() }}
-    {% block tableContent %}
-
-    {% endblock %}
+{% block content %}
+{% embed "CoderslabBundle:User:table.html.twig" %}
+    {% block tableHead %}{% endblock %}
+    {% block tableRows %}
+            <tr>
+                <td>{{ user.0.id }}</td>
+                <td>{{ user.0.name }}</td>
+                <td>{{ user.0.surname }}</td>
+                <td>{{ user.0.description }}</td>
+            </tr>
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

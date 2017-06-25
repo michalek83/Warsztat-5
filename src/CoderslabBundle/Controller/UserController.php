@@ -3,10 +3,13 @@
 namespace CoderslabBundle\Controller;
 
 use CoderslabBundle\Entity\User;
+use CoderslabBundle\Repository\UserRepository;
 use CoderslabBundle\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 class UserController extends Controller
@@ -29,11 +32,27 @@ class UserController extends Controller
 	 * @Route("/new")
 	 * @Method("POST")
 	 */
-	public function newUserPostAction()
+	public function newUserPostAction(Request $request)
 	{
-		return $this->render('CoderslabBundle:User:new_user_post.html.twig', array(
-			// ...
-		));
+		$user = new User();
+		$form = $this->createForm(UserType::class, $user);
+		$form->handleRequest($request);
+
+		if ( $form->isSubmitted() && $form->isValid()){
+			$user = $form->getData();
+			$em = $this->getDoctrine()->getEntityManager();
+			$em->persist($user);
+			$em->flush();
+
+			$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
+			$newUser = $userRepository->findOneBy( ['name' => $user->getName(),
+				'surname' => $user->getSurname(),
+				'description' => $user->getDescription()] );
+
+			return $this->redirectToRoute('showUserById', array('id' => $newUser->getId() ) );
+		}
+
+		return $this->render('CoderslabBundle:User:new_user_post.html.twig', array());
 	}
 
     /**
@@ -73,10 +92,13 @@ class UserController extends Controller
      * @Route("/{id}", name="showUserById", requirements={"id": "\d+"})
 	 * @Method("GET")
      */
-    public function showUserByIdAction()
+    public function showUserByIdAction($id)
     {
+    	$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
+    	$user = $userRepository->findBy( ['id' => $id] );
+
         return $this->render('CoderslabBundle:User:show_user_by_id.html.twig', array(
-            // ...
+            'user' => $user
         ));
     }
 
@@ -86,8 +108,12 @@ class UserController extends Controller
      */
     public function showAllUsersAction()
     {
+
+		$UsersRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
+		$allUsers = $UsersRepository->findBy( [], [ 'surname' => 'ASC', 'name' => 'ASC' ] );
+
         return $this->render('CoderslabBundle:User:show_all_users.html.twig', array(
-            // ...
+			'allUsers' => $allUsers
         ));
     }
 

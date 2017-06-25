@@ -1,17 +1,32 @@
 {% extends "CoderslabBundle:User:base.html.twig" %}
 
-{% block title %}All contacts!{% endblock %}
+{#{% use "CoderslabBundle:User:table.html.twig" %}#}
 
-{% block top %}<h1>All contacts: </h1>{% endblock %}
+{% block title %}All contacts{% endblock %}
 
-{% block body %}
-
-    <a href="{{ path('newUser') }}">Add new contact</a>
-
-    {{ parent() }}
-
-    {% block tableContent %}
-
-    {% endblock %}
-
+{% block top %}<h1>All contacts: </h1>
+<a href="{{ path('newUser') }}">Add new contact</a>
 {% endblock %}
+
+{% block content %}
+    {% embed "CoderslabBundle:User:table.html.twig" %}
+        {% block tableRows %}
+            {% set i = 0 %}
+            {% for user in allUsers %}
+                {% set i = i + 1 %}
+                <tr>
+                    <td>{{ i }}</td>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.surname }}</td>
+                    <td>{{ user.description }}</td>
+                    <td>photo</td>
+                    <td><a href="{{ path('modifyUser', array( 'id' => "{{ user.id }}" )) }}">Edit</a></td>
+                    {#<td><a href="{{ path('deleteUser', array( 'id' => "user.id" )) }}">Edit</a></td>#}
+                </tr>
+            {% endfor %}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block footer %}{% endblock %}
