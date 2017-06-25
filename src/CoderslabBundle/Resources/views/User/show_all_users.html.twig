@@ -5,10 +5,11 @@
 {% block title %}All contacts{% endblock %}
 
 {% block top %}<h1>All contacts: </h1>
-<a href="{{ path('newUser') }}">Add new contact</a>
+<p><a href="{{ path('newUser') }}">Add new contact</a></p>
 {% endblock %}
 
 {% block content %}
+    <font color="red"><b>{{ deleteConfirmation }}</b></font>
     {% embed "CoderslabBundle:User:table.html.twig" %}
         {% block tableRows %}
             {% set i = 0 %}
@@ -21,8 +22,8 @@
                     <td>{{ user.surname }}</td>
                     <td>{{ user.description }}</td>
                     <td>photo</td>
-                    <td><a href="{{ path('modifyUser', array( 'id' => "{{ user.id }}" )) }}">Edit</a></td>
-                    {#<td><a href="{{ path('deleteUser', array( 'id' => "user.id" )) }}">Edit</a></td>#}
+                    <td><a href="{{ path('modifyUser', {'id': user.id}) }}">edit</a>
+                        <a href="{{ path('deleteUser', {'id': user.id}) }}">delete</a></td>
                 </tr>
             {% endfor %}
         {% endblock %}

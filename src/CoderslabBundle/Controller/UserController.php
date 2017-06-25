@@ -81,11 +81,18 @@ class UserController extends Controller
      * @Route("/{id}/delete", name="deleteUser", requirements={"id": "\d+"})
 	 * @Method("GET")
      */
-    public function deleteUserAction()
+    public function deleteUserAction($id, Request $request)
     {
-        return $this->render('CoderslabBundle:User:delete_user.html.twig', array(
-            // ...
-        ));
+    	$em = $this->getDoctrine()->getEntityManager();
+    	$user = $em->getRepository('CoderslabBundle:User')->find($id);
+		$em->remove($user);
+    	$em->flush();
+
+		$session = $request->getSession();
+		$deleteConfirmation = "Contact " . $user->getName() . " " . $user->getSurname() . " was deleted.";
+		$session->set( 'deleteConfirmation', $deleteConfirmation);
+
+        return $this->redirectToRoute('showAllUsers');
     }
 
     /**
@@ -106,14 +113,18 @@ class UserController extends Controller
      * @Route("/", name="showAllUsers")
 	 * @Method("GET")
      */
-    public function showAllUsersAction()
+    public function showAllUsersAction(Request $request)
     {
-
 		$UsersRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
 		$allUsers = $UsersRepository->findBy( [], [ 'surname' => 'ASC', 'name' => 'ASC' ] );
 
+		$session = $request->getSession();
+		$deleteConfirmation = $session->get('deleteConfirmation', null);
+		$session->set('deleteConfirmation', null);
+
         return $this->render('CoderslabBundle:User:show_all_users.html.twig', array(
-			'allUsers' => $allUsers
+			'allUsers' => $allUsers,
+			'deleteConfirmation' => $deleteConfirmation
         ));
     }
 
