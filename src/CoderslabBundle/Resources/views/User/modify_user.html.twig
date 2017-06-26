@@ -1,7 +1,16 @@
-{% extends "::base.html.twig" %}
+{% extends "CoderslabBundle:User:base.html.twig" %}
 
-{% block title %}CoderslabBundle:User:modifyUser{% endblock %}
+{% block title %}Modify contact:{% endblock %}
 
-{% block body %}
-<h1>Welcome to the User:modifyUser page</h1>
+{% block top %}{% endblock %}
+
+{% block content %}
+    {% embed "CoderslabBundle:User:show_user_by_id.html.twig" %}
+        {% block top %}<h1>Modify contact</h1>{% endblock %}
+        {% block footer %}{% endblock %}
+    {% endembed %}<br>
+    <p><b>New data: </b></p>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
 {% endblock %}
