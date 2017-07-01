@@ -14,8 +14,11 @@
         Name: <input type="text" name="name"><br>
         Surname: <input type="text" name="surname"><br>
         Description: <input type="text" name="description"><br>
-        Address:<br>
+        <b>Address:</b><br>
         {% embed "CoderslabBundle:User:address.html.twig" %}{% endembed %}
+        <b>Phone:</b><br>
+        {% embed "CoderslabBundle:User:phone.html.twig" %}{% endembed %}
+
         <input type="submit" value="Modify">
     </form>
 {% endblock %}

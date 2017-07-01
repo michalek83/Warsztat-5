@@ -66,14 +66,16 @@ class UserController extends Controller
 		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
 		$userToModify = $userRepository->find( $id );
 		$addressRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Address' );
-//		$userAddress = $addressRepository->find($userToModify->getAddress());
-		$userAddress = $addressRepository->find(3);
-		var_dump($userAddress);
+		$userAddress = $addressRepository->find( $userToModify->getAddress() );
+		$phoneRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Phone' );
+		$userPhone = $phoneRepository->findByUser( $id );
+		$userPhone = $userPhone[ 0 ];
 
-//		return $this->render( 'CoderslabBundle:User:modify_user.html.twig', array(
-//			'user' => $userToModify,
-//			'userAddress' => $userAddress
-//		) );
+		return $this->render( 'CoderslabBundle:User:show_user_by_id.html.twig', array(
+			'user' => $userToModify,
+			'userAddress' => $userAddress,
+			'userPhone' => $userPhone
+		) );
 	}
 
 	/**
@@ -91,23 +93,38 @@ class UserController extends Controller
 		$street = $request->request->get( 'street' );
 		$houseNumber = $request->request->get( 'houseNumber' );
 		$flatNumber = $request->request->get( 'flatNumber' );
+		$phoneNumber = $request->request->get( 'phoneNumber' );
+		$phoneType = $request->request->get( 'phoneType' );
 
 		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
 		$userToModify = $userRepository->find( $id );
 		$addressRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Address' );
-		$userAddress = $addressRepository->find($userToModify->getAddress());
+		$userAddress = $addressRepository->find( $userToModify->getAddress() );
 
-		if(!$userToModify->getAddress()){
+		if ( !$userToModify->getAddress() ) {      //Dopisywanie nowego adresu
 			$address = new Address();
-			$address->setCity($city);
-			$address->setStreet($street);
-			$address->setHouseNumber($houseNumber);
-			$address->setFlatNumber($flatNumber);
-			$em->persist($address);
-			$userToModify->setAddress($address);
-			$em->persist($userToModify);
+			$address->setCity( $city );
+			$address->setStreet( $street );
+			$address->setHouseNumber( $houseNumber );
+			$address->setFlatNumber( $flatNumber );
+			$em->persist( $address );
+			$userToModify->setAddress( $address );
+			$em->persist( $userToModify );
+		} else {                                    //Modyfikacja istniejącego adresu
+			if ( $city ) {
+				$userAddress->setCity( $city );
+			}
+			if ( $street ) {
+				$userAddress->setStreet( $street );
+			}
+			if ( $houseNumber ) {
+				$userAddress->setHouseNumber( $houseNumber );
+			}
+			if ( $flatNumber ) {
+				$userAddress->setFlatNumber( $flatNumber );
+			}
+			$em->persist( $userAddress );
 		}
-//		$userAddress = $addressRepository->find($userToModify->getAddress());
 
 		if ( $name ) {
 			$userToModify->setName( $name );
@@ -118,15 +135,10 @@ class UserController extends Controller
 		if ( $description ) {
 			$userToModify->setDescription( $description );
 		}
-//		if ( $city ) {
-//			$userToModify->setCity( $city );
-//		}
 
-		var_dump($address);
+		$em->flush();
 
-//		$em->flush();
-
-//		return $this->redirectToRoute( 'modifyUser', array( 'id' => $id ) );
+		return $this->redirectToRoute( 'modifyUser', array( 'id' => $id ) );
 
 	}
 
@@ -157,13 +169,31 @@ class UserController extends Controller
 		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
 		$userToModify = $userRepository->find( $id );
 		$addressRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Address' );
-//		$userAddress = $addressRepository->find($userToModify->getAddress());
-		$userAddress = $addressRepository->find(3);
-		var_dump($userAddress);
+		if ( $userToModify->getAddress() ) {
+			$userAddress = $addressRepository->find( $userToModify->getAddress() );
+		} else {
+			$userAddress = null;
+		}
+		$phoneRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Phone' );
+		$userPhone = $phoneRepository->findByUser( $id );
+		if ( count( $userPhone ) == 0 ) {
+			$userPhone = null;
+		} else {
+			$userPhone = $userPhone[ 0 ];
+		}
+		$emailRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Email' );
+		$userEmail = $emailRepository->findByUser($id);
+		if ( count( $userEmail ) == 0 ) {
+			$userEmail = null;
+		} else {
+			$userEmail = $userEmail[ 0 ];
+		}
 
 		return $this->render( 'CoderslabBundle:User:show_user_by_id.html.twig', array(
 			'user' => $userToModify,
-			'userAddress' => $userAddress
+			'userAddress' => $userAddress,
+			'userPhone' => $userPhone,
+			'userEmail' => $userEmail
 		) );
 	}
 

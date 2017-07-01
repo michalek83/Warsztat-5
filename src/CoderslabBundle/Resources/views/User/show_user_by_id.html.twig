@@ -19,9 +19,15 @@
                 <td>{{ user.surname }}</td>
                 <td>{{ user.description }}</td>
                 <td>photo</td>
-                <td>ul. {{ userAddress.street }} {{ userAddress.houseNumber }}/{{ userAddress.flatNumber }}<br>{{ userAddress.city }}</td>
-                <td>telefon</td>
-                <td>Email</td>
+                <td> {% if userAddress is null %} There is no address
+                    {% else %} ul. {{ userAddress.street }} {{ userAddress.houseNumber }}/{{ userAddress.flatNumber }}<br>{{ userAddress.city }}
+                {% endif %} </td>
+                <td>{% if userPhone is null %}There is no phone number
+                     {% else %}nr: {{ userPhone.number }}<br>type: {{ userPhone.type }}
+                {% endif %}</td>
+                <td>{% if userEmail is null %}There is no email address
+                    {% else %}email address: {{ userEmail.address }}<br>type: {{ userEmail.type }}
+                {% endif %}</td>
             </tr>
         {% endblock %}
     {% endembed %}
