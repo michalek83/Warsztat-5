@@ -2,17 +2,26 @@
 
 {% block title %}Contact no !{% endblock %}
 
-{% block top %}<h1>Contact no {{ user.0.id }}</h1>{% endblock %}
+{% block top %}<h1>Contact no {{ user.id }}</h1>{% endblock %}
 
 {% block content %}
-{% embed "CoderslabBundle:User:table.html.twig" %}
-    {% block tableHead %}{% endblock %}
-    {% block tableRows %}
+    {% embed "CoderslabBundle:User:table.html.twig" %}
+        {% block tableHead %}{% endblock %}
+        {% block tableHeadRest %}
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Email</th>
+        {% endblock %}
+        {% block tableRows %}
             <tr>
-                <td>{{ user.0.id }}</td>
-                <td>{{ user.0.name }}</td>
-                <td>{{ user.0.surname }}</td>
-                <td>{{ user.0.description }}</td>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.surname }}</td>
+                <td>{{ user.description }}</td>
+                <td>photo</td>
+                <td>ul. {{ userAddress.street }} {{ userAddress.houseNumber }}/{{ userAddress.flatNumber }}<br>{{ userAddress.city }}</td>
+                <td>telefon</td>
+                <td>Email</td>
             </tr>
         {% endblock %}
     {% endembed %}

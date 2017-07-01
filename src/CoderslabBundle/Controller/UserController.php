@@ -2,10 +2,11 @@
 
 namespace CoderslabBundle\Controller;
 
+use CoderslabBundle\Entity\Address;
 use CoderslabBundle\Entity\User;
 use CoderslabBundle\Form\UserModifyType;
 use CoderslabBundle\Repository\UserRepository;
-use CoderslabBundle\Form\UserNewType;
+use CoderslabBundle\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -22,7 +23,7 @@ class UserController extends Controller
 	public function newUserGetAction()
 	{
 		$user = new User();
-		$form = $this->createForm( UserNewType::class, $user );
+		$form = $this->createForm( UserType::class, $user );
 
 		return $this->render( 'CoderslabBundle:User:new_user.html.twig', array(
 			'form' => $form->createView()
@@ -36,7 +37,7 @@ class UserController extends Controller
 	public function newUserPostAction( Request $request )
 	{
 		$user = new User();
-		$form = $this->createForm( UserNewType::class, $user );
+		$form = $this->createForm( UserType::class, $user );
 		$form->handleRequest( $request );
 
 		if ( $form->isSubmitted() && $form->isValid() ) {
@@ -60,47 +61,72 @@ class UserController extends Controller
 	 * @Route("/{id}/modify", name="modifyUser", requirements={"id": "\d+"})
 	 * @Method("GET")
 	 */
-	public function modifyUserGetAction( $id )
+	public function modifyUserGetAction( $id, Request $request )
 	{
-		$user = new User();
-		$form = $this->createForm( UserModifyType::class, $user );
-
 		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
-		$userToModify = $userRepository->findBy( [ 'id' => $id ] );
+		$userToModify = $userRepository->find( $id );
+		$addressRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Address' );
+//		$userAddress = $addressRepository->find($userToModify->getAddress());
+		$userAddress = $addressRepository->find(3);
+		var_dump($userAddress);
 
-		return $this->render( 'CoderslabBundle:User:modify_user.html.twig', array(
-			'form' => $form->createView(),
-			'user' => $userToModify
-		) );
+//		return $this->render( 'CoderslabBundle:User:modify_user.html.twig', array(
+//			'user' => $userToModify,
+//			'userAddress' => $userAddress
+//		) );
 	}
 
 	/**
 	 * @Route("/{id}/modify", requirements={"id": "\d+"})
 	 * @Method("POST")
 	 */
-	public function modifyUserPostAction( $id )
+	public function modifyUserPostAction( Request $request, $id )
 	{
-		$user = new User();
-		$form = $this->createForm( UserModifyType::class, $user );
+		$em = $this->getDoctrine()->getEntityManager();
 
-//		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
-//		$userToModify = $userRepository->findBy( ['id' => $id] );
+		$name = $request->request->get( 'name' );
+		$surname = $request->request->get( 'surname' );
+		$description = $request->request->get( 'description' );
+		$city = $request->request->get( 'city' );
+		$street = $request->request->get( 'street' );
+		$houseNumber = $request->request->get( 'houseNumber' );
+		$flatNumber = $request->request->get( 'flatNumber' );
 
-		if ( $form->isSubmitted() && $form->isValid() ) {
-			$user = $form->getData();
-			$em = $this->getDoctrine()->getEntityManager();
-			var_dump( $em );
-//			$em->flush();
+		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
+		$userToModify = $userRepository->find( $id );
+		$addressRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Address' );
+		$userAddress = $addressRepository->find($userToModify->getAddress());
 
-//			$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
-//			$newUser = $userRepository->findOneBy( ['name' => $user->getName(),
-//				'surname' => $user->getSurname(),
-//				'description' => $user->getDescription()] );
-
-			return $this->redirectToRoute( 'showUserById', array( 'id' => $newUser->getId() ) );
+		if(!$userToModify->getAddress()){
+			$address = new Address();
+			$address->setCity($city);
+			$address->setStreet($street);
+			$address->setHouseNumber($houseNumber);
+			$address->setFlatNumber($flatNumber);
+			$em->persist($address);
+			$userToModify->setAddress($address);
+			$em->persist($userToModify);
 		}
+//		$userAddress = $addressRepository->find($userToModify->getAddress());
 
-		return $this->redirectToRoute( 'modifyUser' );
+		if ( $name ) {
+			$userToModify->setName( $name );
+		}
+		if ( $surname ) {
+			$userToModify->setSurname( $surname );
+		}
+		if ( $description ) {
+			$userToModify->setDescription( $description );
+		}
+//		if ( $city ) {
+//			$userToModify->setCity( $city );
+//		}
+
+		var_dump($address);
+
+//		$em->flush();
+
+//		return $this->redirectToRoute( 'modifyUser', array( 'id' => $id ) );
 
 	}
 
@@ -129,10 +155,15 @@ class UserController extends Controller
 	public function showUserByIdAction( $id )
 	{
 		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
-		$user = $userRepository->findBy( [ 'id' => $id ] );
+		$userToModify = $userRepository->find( $id );
+		$addressRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Address' );
+//		$userAddress = $addressRepository->find($userToModify->getAddress());
+		$userAddress = $addressRepository->find(3);
+		var_dump($userAddress);
 
 		return $this->render( 'CoderslabBundle:User:show_user_by_id.html.twig', array(
-			'user' => $user
+			'user' => $userToModify,
+			'userAddress' => $userAddress
 		) );
 	}
 
