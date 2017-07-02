@@ -3,6 +3,8 @@
 namespace CoderslabBundle\Controller;
 
 use CoderslabBundle\Entity\Address;
+use CoderslabBundle\Entity\Email;
+use CoderslabBundle\Entity\Phone;
 use CoderslabBundle\Entity\User;
 use CoderslabBundle\Form\UserModifyType;
 use CoderslabBundle\Repository\UserRepository;
@@ -66,15 +68,31 @@ class UserController extends Controller
 		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
 		$userToModify = $userRepository->find( $id );
 		$addressRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Address' );
-		$userAddress = $addressRepository->find( $userToModify->getAddress() );
+		if ( $userToModify->getAddress() ) {
+			$userAddress = $addressRepository->find( $userToModify->getAddress() );
+		} else {
+			$userAddress = null;
+		}
 		$phoneRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Phone' );
 		$userPhone = $phoneRepository->findByUser( $id );
-		$userPhone = $userPhone[ 0 ];
+		if ( count( $userPhone ) == 0 ) {
+			$userPhone = null;
+		} else {
+			$userPhone = $userPhone[ 0 ];
+		}
+		$emailRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Email' );
+		$userEmail = $emailRepository->findByUser( $id );
+		if ( count( $userEmail ) == 0 ) {
+			$userEmail = null;
+		} else {
+			$userEmail = $userEmail[ 0 ];
+		}
 
-		return $this->render( 'CoderslabBundle:User:show_user_by_id.html.twig', array(
+		return $this->render( 'CoderslabBundle:User:modify_user.html.twig', array(
 			'user' => $userToModify,
 			'userAddress' => $userAddress,
-			'userPhone' => $userPhone
+			'userPhone' => $userPhone,
+			'userEmail' => $userEmail
 		) );
 	}
 
@@ -95,11 +113,37 @@ class UserController extends Controller
 		$flatNumber = $request->request->get( 'flatNumber' );
 		$phoneNumber = $request->request->get( 'phoneNumber' );
 		$phoneType = $request->request->get( 'phoneType' );
+		$emailAddress = $request->request->get( 'emailAddress' );
+		$emailType = $request->request->get( 'emailType' );
 
 		$userRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:User' );
 		$userToModify = $userRepository->find( $id );
 		$addressRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Address' );
 		$userAddress = $addressRepository->find( $userToModify->getAddress() );
+		$phoneRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Phone' );
+		$userPhone = $phoneRepository->findByUser( $id );
+		if ( count( $userPhone ) == 0 ) {
+			$userPhone = null;
+		} else {
+			$userPhone = $userPhone[ 0 ];
+		}
+		$emailRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Email' );
+		$userEmail = $emailRepository->findByUser( $id );
+		if ( count( $userEmail ) == 0 ) {
+			$userEmail = null;
+		} else {
+			$userEmail = $userEmail[ 0 ];
+		}
+
+		if ( $name ) {                                //Modyfikacja istniejącego kontaktu
+			$userToModify->setName( $name );
+		}
+		if ( $surname ) {
+			$userToModify->setSurname( $surname );
+		}
+		if ( $description ) {
+			$userToModify->setDescription( $description );
+		}
 
 		if ( !$userToModify->getAddress() ) {      //Dopisywanie nowego adresu
 			$address = new Address();
@@ -126,14 +170,36 @@ class UserController extends Controller
 			$em->persist( $userAddress );
 		}
 
-		if ( $name ) {
-			$userToModify->setName( $name );
+		if ( !$userPhone ) {                        //Dodawanie nowego numeru
+			$userPhone = new Phone();
+			$userPhone->setNumber( $phoneNumber );
+			$userPhone->setType( $phoneType );
+			$userPhone->setUser( $userToModify );
+			$em->persist( $userPhone );
+		} else {                                    //Modyfikacja istniejącego numeru
+			if ( ( $phoneNumber ) && ( $userPhone->getNumber() !== $phoneNumber ) ) {
+				$userPhone->setNumber( $phoneNumber );
+			}
+			if ( ( $phoneType ) && ( $userPhone->getType() !== $phoneType ) ) {
+				$userPhone->setType( $phoneType );
+			}
+			$em->persist( $userPhone );
 		}
-		if ( $surname ) {
-			$userToModify->setSurname( $surname );
-		}
-		if ( $description ) {
-			$userToModify->setDescription( $description );
+
+		if ( !$userEmail ) {                        //Dodawanie nowego emaila
+			$userEmail = new Email();
+			$userEmail->setAddress( $emailAddress );
+			$userEmail->setType( $emailType );
+			$userEmail->setUser( $userToModify );
+			$em->persist( $userEmail );
+		} else {                                    //Modyfikacja istniejącego email
+			if ( ( $emailAddress ) && ( $userEmail->getAddress() !== $emailAddress ) ) {
+				$userEmail->setAddress( $emailAddress );
+			}
+			if ( ( $emailType ) && ( $userEmail->getType() !== $emailType ) ) {
+				$userEmail->setType( $emailType );
+			}
+			$em->persist( $userEmail );
 		}
 
 		$em->flush();
@@ -182,7 +248,7 @@ class UserController extends Controller
 			$userPhone = $userPhone[ 0 ];
 		}
 		$emailRepository = $this->getDoctrine()->getRepository( 'CoderslabBundle:Email' );
-		$userEmail = $emailRepository->findByUser($id);
+		$userEmail = $emailRepository->findByUser( $id );
 		if ( count( $userEmail ) == 0 ) {
 			$userEmail = null;
 		} else {
